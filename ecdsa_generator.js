@@ -60,23 +60,18 @@ var jordan_double = function (a) {
 
 var jordan_multiply = function (a, n) {
     if (jordan_isinf(a) || n.eq(0)) {
-        //console.log("in jordan_multiply jordan_isinf(a) or n == 0");
         return ([ZERO, ZERO], [ZERO, ZERO]);
     }
     if (n.eq(1)) {
-        //console.log("in jordan_multiply N=1");
         return a;
     }
     if (n.lt(0) || n.geq(N)) {
-        //console.log("in jordan_multiply n < 0 or n >= N");
         return jordan_multiply(a, n.mod(N));
     }
     if (n.mod(2).eq(0)) {
-        //console.log("in jordan_multiply (n % 2) == 0");
         return jordan_double(jordan_multiply(a, n.divide(TWO)));
     }
     if (n.mod(2).eq(1)) {
-        //console.log("in jordan_multiply (n % 2) == 1");
         return jordan_add(jordan_double(jordan_multiply(a, n.divide(TWO))), a);
     }
 }
@@ -105,8 +100,16 @@ var sub = function (a, b) {
     return from_jordan(jordan_add(to_jordan(a), to_jordan([b[0], b[1].multiply(-1)])))
 }
 
+var negate = function (a) {
+    return [a[0], P.subtract(a[1]).mod(P)];
+}
+
+//¹²³⁴⁵⁶⁷⁸⁹⁰
 var N = new BN('fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141', 16);
-var P = new BN('fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f', 16);  //2**256 - 2**32 - 977
+var P = new BN('fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f', 16);  //2²⁵⁶ - 2³² - 2⁹ - 2⁸ - 2⁷ - 2⁶ - 2⁴ - 1
+
+
+
 var Pp1d4 = new BN('3fffffffffffffffffffffffffffffffffffffffffffffffffffffffbfffff0c', 16);
 var ZERO = new BN(0);
 var ONE = new BN(1);
@@ -119,42 +122,113 @@ var Y = new BN('483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8
 
 //now recover public key
 //http://2coin.org/index.html?txid=5cc5364a43ee9212387bfd45fa2e2c5e8ed7b2a32fa2f8e3084f6c8845ca3e15
-//var R = new BN('3b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63', 16);
-//var S = new BN('5d38a230719d7282d6650c7a19ea810531501d391448aa61061828a073da404d', 16);
-//var Z = new BN('422e18e3c79ed7ba9eb41754d26ab846d6c0644abb51eeca74a8973d4d8e656b', 16);
+var R = new BN('3b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63', 16);
+var S = new BN('5d38a230719d7282d6650c7a19ea810531501d391448aa61061828a073da404d', 16);
+var Z = new BN('422e18e3c79ed7ba9eb41754d26ab846d6c0644abb51eeca74a8973d4d8e656b', 16);
 
 //http://2coin.org/index.html?txid=9ec4bc49e828d924af1d1029cacf709431abbde46d59554b62bc270e3b29c4b1
-var R = new BN('d47ce4c025c35ec440bc81d99834a624875161a26bf56ef7fdc0f5d52f843ad1', 16);
-var S = new BN('44e1ff2dfd8102cf7a47c21d5c9fd5701610d04953c6836596b4fe9dd2f53e3e', 16);
-var Z = new BN('c0e2d0a89a348de88fda08211c70d1d7e52ccef2eb9459911bf977d587784c6e', 16);
+//var R = new BN('d47ce4c025c35ec440bc81d99834a624875161a26bf56ef7fdc0f5d52f843ad1', 16);
+//var S = new BN('44e1ff2dfd8102cf7a47c21d5c9fd5701610d04953c6836596b4fe9dd2f53e3e', 16);
+//var Z = new BN('c0e2d0a89a348de88fda08211c70d1d7e52ccef2eb9459911bf977d587784c6e', 16);
 
+//y² = x³ + 7    <--- secp256k1 curve
+
+console.log("R                = " + R.toString(16));
+console.log("S                = " + S.toString(16));
+console.log("Z                = " + Z.toString(16));
+
+console.log();
+
+//R is the x coordinate of an ecPoint where the x value = R, so we need to find the y value.
+//we can use the function y² = x³ + 7
 var x = R;
-console.log("x = " + x.toString(16));
+console.log("x                = " + x.toString(16));
 
 var ySquared = x.pow(THREE).add(SEVEN).mod(P);
-console.log("ySquared = " + ySquared.toString(16));
+console.log("y²               = " + ySquared.toString(16));
 
-var flag0result =  P.minus(ySquared.modPow(Pp1d4, P));
-var flag1result =  ySquared.modPow(Pp1d4, P);
-console.log("flag 0 = " + flag0result.toString(16));
-console.log("flag 1 = " + flag1result.toString(16));
+//there are two possible answers that produce a squared result, ie, 4 = 2² or -2². We only need one of them, doesn't matter which.
+var y = ySquared.modPow(Pp1d4, P); //get the root of ySquared
+//var y = P.minus(ySquared.modPow(Pp1d4, P)).mod(P); //i can also get the other answer if i wanted by subtracting the first result from P
+console.log("y                = " + y.toString(16));
 
-var y = flag0result;//.toString(16);
+var ecPointR = [x, y];
+console.log("ecPointR         = " + ecPointR[0].toString(16) + ", " + ecPointR[1].toString(16));
+console.log("or");
+console.log("ecPointR         = " + ecPointR[0].toString(16) + ", " + P.minus(ecPointR[1]).mod(P).toString(16));
 
-var pointR = [x, y];
-console.log("pointR = " + pointR);
+console.log();
+
+
+//calculate some more constants
 
 var SdR = S.multiply(R.modInv(N)).mod(N);
-console.log("sdr = " + SdR.toString(16));
+console.log("S/R              = " + SdR.toString(16));
 
 var ZdR = Z.multiply(R.modInv(N)).mod(N);
-console.log("zdr = " + ZdR.toString(16));
+console.log("Z/R              = " + ZdR.toString(16));
 
-var pointRmSdR = mul(pointR, SdR); // G.keyFromPublic(pointR.getPublic().mul(SdR.toString(16)));
-var pointZdR = mul([X, Y], ZdR); //G.keyFromPrivate(ZdR.toString(16));
+var ecPointRmSdR = mul(ecPointR, SdR);
+console.log("ecPointR * (S/R) = [" + ecPointRmSdR[0].toString(16) + ", " + ecPointRmSdR[1].toString(16) + "]");
 
-var pubkey = sub(pointRmSdR, pointZdR);// G.keyFromPublic(pointRmSdR.neg().getPublic().add(pointZdR.getPublic()));
-console.dir(pubkey[0].toString(16) + " " + pubkey[1].toString(16));
+var ecPointZdR = mul([X, Y], ZdR);
+console.log("ecPoint(Z/R)     = [" + ecPointZdR[0].toString(16) + ", " + ecPointZdR[1].toString(16) + "]");
+
+console.log();
+console.log("-------------");
+console.log();
+console.log("4 Possible ecPoints for the public key");
+console.log();
+var ecPointPubKey1 = sub(ecPointRmSdR, ecPointZdR);
+var ecPointPubKey2 = sub(ecPointZdR, ecPointRmSdR);
+var ecPointPubKey3 = sub(negate(ecPointRmSdR), ecPointZdR);
+var ecPointPubKey4 = sub(ecPointZdR, negate(ecPointRmSdR));
+
+
+console.log("(1) pubKeyPoint  = [" + ecPointPubKey1[0].toString(16) + ", " + ecPointPubKey1[1].toString(16) + "]");
+console.log("(2) pubKeyPoint  = [" + ecPointPubKey2[0].toString(16) + ", " + ecPointPubKey2[1].toString(16) + "]");
+console.log("(3) pubKeyPoint  = [" + ecPointPubKey3[0].toString(16) + ", " + ecPointPubKey3[1].toString(16) + "]");
+console.log("(4) pubKeyPoint  = [" + ecPointPubKey4[0].toString(16) + ", " + ecPointPubKey4[1].toString(16) + "]");
+console.log();
+
+console.log("-------------");
+console.log();
+console.log("8 possible crypto formatted public keys");
+console.log();
+
+console.log("uncompressed pubkey (1)        = 04" + ecPointPubKey1[0].toString(16) + ecPointPubKey1[1].toString(16));
+if(ecPointPubKey1[1].mod(TWO).eq(ZERO)){
+    console.log("compressed pubkey (1) (even y) = 02" + ecPointPubKey1[0].toString(16));
+}else{
+    console.log("compressed pubkey (1) (odd y)  = 03" + ecPointPubKey1[0].toString(16));
+}
+
+console.log();
+console.log("uncompressed pubkey (1)        = 04" + ecPointPubKey2[0].toString(16) + ecPointPubKey2[1].toString(16));
+if(ecPointPubKey2[1].mod(TWO).eq(ZERO)){
+    console.log("compressed pubkey (1) (even y) = 02" + ecPointPubKey2[0].toString(16));
+}else{
+    console.log("compressed pubkey (1) (odd y)  = 03" + ecPointPubKey2[0].toString(16));
+}
+
+console.log();
+console.log("uncompressed pubkey (1)        = 04" + ecPointPubKey3[0].toString(16) + ecPointPubKey3[1].toString(16));
+if(ecPointPubKey3[1].mod(TWO).eq(ZERO)){
+    console.log("compressed pubkey (1) (even y) = 02" + ecPointPubKey3[0].toString(16));
+}else{
+    console.log("compressed pubkey (1) (odd y)  = 03" + ecPointPubKey3[0].toString(16));
+}
+
+console.log();
+console.log("uncompressed pubkey (1)        = 04" + ecPointPubKey4[0].toString(16) + ecPointPubKey4[1].toString(16));
+if(ecPointPubKey4[1].mod(TWO).eq(ZERO)){
+    console.log("compressed pubkey (1) (even y) = 02" + ecPointPubKey4[0].toString(16));
+}else{
+    console.log("compressed pubkey (1) (odd y) = 03" + ecPointPubKey4[0].toString(16));
+}
+console.log();
+
+
 
 //var oneG = mul([X, Y], ONE);
 //console.log("1  " + oneG[0].toString(16) + " " + oneG[1].toString(16));
