@@ -89,7 +89,7 @@ var mul = function (a, n) {
 }
 
 var div = function (a, n) {
-    return from_jordan(jordan_multiply(to_jordan(a), n.modInv(N)))
+    return from_jordan(jordan_multiply(to_jordan(a), n.modInv(P).mod(P)))
 }
 
 var add = function (a, b) {
@@ -97,7 +97,7 @@ var add = function (a, b) {
 }
 
 var sub = function (a, b) {
-    return from_jordan(jordan_add(to_jordan(a), to_jordan([b[0], b[1].multiply(MINUSONE).add(P).mod(P)])))
+    return from_jordan(jordan_add(to_jordan(a), to_jordan([b[0], P.subtract(b[1]).mod(P)])))
 }
 
 var negate = function (a) {
