@@ -6,5 +6,6 @@ This example code demonstrates how to get public keys using RSZ values from a tr
 The output from a typical RSZ will produce 2 possible public keys,
 If the public key matches the one used in the TX input, or generates the address used in the TX Input's previous output, then it can be considered a valid transaction that was signed using the private key of the found public key.
 
-
+Video tutorial at
+https://youtu.be/LQmnMmd3bDU
 
