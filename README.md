@@ -1,8 +1,10 @@
 # ECDSA_secp256k1_JordonMatrix_nodejs 
 contains javascript ecdsa generator, specifically secp256k1 properties, using jordon form matrices
 
+Using the R,S and Z values, you can generate a public key.
 This example code demonstrates how to get public keys using RSZ values from a transaction input.
-The output from a typical RSZ will produce 8 possible public keys,
-test each public key outputted to see what address it creates, and if it creates the same address used in the transation inputs source output, than you can consider that the transaction input was signed correctly by the true holder of the senders private key, and not faked.
+The output from a typical RSZ will produce 2 possible public keys,
+If the public key matches the one used in the TX input, or generates the address used in the TX Input's previous output, then it can be considered a valid transaction that was signed using the private key of the found public key.
+
 
 
