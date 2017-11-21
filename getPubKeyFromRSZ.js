@@ -1,7 +1,7 @@
 var BN = require("big-integer");
 
 var jordan_isinf = function (p) {
-    return p[0][0].eq(0) && p[1][0].eq(0);
+    return p[0][0].eq(ZERO) && p[1][0].eq(ZERO);
 }
 
 var mulcoords = function (c1, c2) {
@@ -59,7 +59,7 @@ var jordan_double = function (a) {
 }
 
 var jordan_multiply = function (a, n) {
-    if (jordan_isinf(a) || n.eq(0)) {
+    if (jordan_isinf(a) || n.eq(ZERO)) {
         return ([ZERO, ZERO], [ZERO, ZERO]);
     }
     if (n.eq(1)) {
@@ -68,10 +68,10 @@ var jordan_multiply = function (a, n) {
     if (n.lt(0) || n.geq(N)) {
         return jordan_multiply(a, n.mod(N));
     }
-    if (n.mod(2).eq(0)) {
+    if (n.mod(2).eq(ZERO)) {
         return jordan_double(jordan_multiply(a, n.divide(TWO)));
     }
-    if (n.mod(2).eq(1)) {
+    if (n.mod(2).eq(ONE)) {
         return jordan_add(jordan_double(jordan_multiply(a, n.divide(TWO))), a);
     }
 }
@@ -110,7 +110,7 @@ var ecPoint = function(a) {
 
 
 
-//How to extract public key using the R, S and Z values of a bitcoin transaction input.
+//Extract Bitcoin Public Key using R, S and Z values.
 
 //secp256k1 constants
 var P = new BN('fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f', 16);  //2²⁵⁶ - 2³² - 2⁹ - 2⁸ - 2⁷ - 2⁶ - 2⁴ - 1
@@ -122,17 +122,10 @@ var Y = new BN('483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8
 
 //other constants my functions use
 var ONE = new BN(1);
-var MINUSONE = new BN(-1);
 var TWO = new BN(2);
 var THREE = new BN(3);
 var Pp1d4 = new BN('3fffffffffffffffffffffffffffffffffffffffffffffffffffffffbfffff0c', 16);
 
-
-//Intro, there are two types of numbers in use in this demo,
-//1 - Integers, more specifically big numbers, and they are all modded N
-//2 - ecPoint, a point on 2 Dimensional graph. More specifically, the points produced by the secp256k1 Elliptic Curve equation y² = x³ + 7
-
-//Lets get some R, S and Z values.
 
 //http://2coin.org/index.html?txid=9ec4bc49e828d924af1d1029cacf709431abbde46d59554b62bc270e3b29c4b1
 var R = new BN('d47ce4c025c35ec440bc81d99834a624875161a26bf56ef7fdc0f5d52f843ad1', 16);
@@ -210,27 +203,7 @@ console.log("Z                = " + Z.toString(16));
 
 console.log();
 
-
-
-//Now for some background info,
-//To recover a private key, the function is,
-//privKey = (((S * K) - Z) / R) % N      <--- Integer (mod N) equation to find the private key.
-//privKey = (((S * K) / R) - (Z / R)) % N
-//to get the public key, you can use the elliptic curve equivalent of this function. 
-//pubKey  = ecPoint((((S * K) / R) - (Z / R)) % N)
-//pubKey  = ecPoint((((S * K) / R) % N) - ecPoint((Z / R)) % N))
-//pubKey  = ecPoint((S * K) / R) - ecPoint(Z / R))
-//pubKey  = ecPoint((K * S) / R) - ecPoint(Z / R))
-//pubKey  = ecPoint(K * (S / R)) - ecPoint(Z / R))
-//pubKey  = (ecPoint(K) * (S / R)) - ecPoint(Z / R))
-
-//R = ecPoint(K).x coordinate;
-//R is the x coordinate of an ecPoint whose x value = R. We need to find the y value that produces this x value.
-//We can use this function,
-//y² = x³ + 7    <----this is the equation of the secp256k1 curve 
-
-
-
+// y² = x³ + 7
 
 var x = R;
 console.log("x                = " + x.toString(16));
@@ -278,7 +251,7 @@ console.log("-------------");
 console.log();
 console.log("2 Possible ecPoints for the public key. (depends on which ecPointK was used)");
 console.log();
-var ecPointPubKey1 = sub(ecPointKmSdR, ecPointZdR); //pubKey  = ecPoint(K*(S/R)) - ecPoint(Z`   11111QA2/R)
+var ecPointPubKey1 = sub(ecPointKmSdR, ecPointZdR); 
 var ecPointPubKey2 = sub(negate(ecPointKmSdR), ecPointZdR); //when using P - root of ySquared value
 
 
@@ -288,22 +261,22 @@ console.log();
 
 console.log("-------------");
 console.log();
-console.log("4 possible crypto formatted public keys. (depends on which ecPointK was used)");
+console.log("4 possible Bitcoin formatted public keys. (depends on which ecPointK was used)");
 console.log();
 
-console.log("uncompressed pubkey (1)        = 04" + ecPointPubKey1[0].toString(16) + ecPointPubKey1[1].toString(16));
+console.log("uncompressed pubkey (1)        = \n04" + ecPointPubKey1[0].toString(16) + ecPointPubKey1[1].toString(16));
 if(ecPointPubKey1[1].mod(TWO).eq(ZERO)){
-    console.log("compressed pubkey (1) (even y) = 02" + ecPointPubKey1[0].toString(16));
+    console.log("compressed pubkey (1) (even y) = \n02" + ecPointPubKey1[0].toString(16));
 }else{
-    console.log("compressed pubkey (1) (odd y)  = 03" + ecPointPubKey1[0].toString(16));
+    console.log("compressed pubkey (1) (odd y)  = \n03" + ecPointPubKey1[0].toString(16));
 }
 console.log();
 
-console.log("uncompressed pubkey (2)        = 04" + ecPointPubKey2[0].toString(16) + ecPointPubKey2[1].toString(16));
+console.log("uncompressed pubkey (2)        = \n04" + ecPointPubKey2[0].toString(16) + ecPointPubKey2[1].toString(16));
 if(ecPointPubKey2[1].mod(TWO).eq(ZERO)){
-    console.log("compressed pubkey (2) (even y) = 02" + ecPointPubKey2[0].toString(16));
+    console.log("compressed pubkey (2) (even y) = \n02" + ecPointPubKey2[0].toString(16));
 }else{
-    console.log("compressed pubkey (2) (odd y)  = 03" + ecPointPubKey2[0].toString(16));
+    console.log("compressed pubkey (2) (odd y)  = \n03" + ecPointPubKey2[0].toString(16));
 }
 console.log();
 
