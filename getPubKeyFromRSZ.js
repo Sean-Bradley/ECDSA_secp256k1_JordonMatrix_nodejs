@@ -224,7 +224,8 @@ var ecPointK = [x, y];
 console.log("ecPointK (1)     = " + ecPointK[0].toString(16) + ", " + ecPointK[1].toString(16));
 console.log("ecPointK (2)     = " + ecPointK[0].toString(16) + ", " + P.minus(ecPointK[1]).mod(P).toString(16));
 
-//pubKey  = (ecPointK * (S/R)) - ecPoint(Z/R))
+//pseudocode to get public key point
+//pubKey  = (ecPoint(K) * (S/R)) - ecPoint(Z/R))
 
 console.log();
 
