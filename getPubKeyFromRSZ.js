@@ -84,18 +84,42 @@ var from_jordan = function (p) {
     return [p[0][0].multiply(p[0][1].modInv(P)).mod(P), p[1][0].multiply(p[1][1].modInv(P)).mod(P)];
 }
 
+
+/**
+ * Multiply an ECPoint.
+ * @param {number} a - An ECPoint
+ * @param {number} n - A Big Number
+ */
 var mul = function (a, n) {
     return from_jordan(jordan_multiply(to_jordan(a), n))
 }
 
+
+/**
+ * Divide an ECPoint.
+ * @param {number} a - An ECPoint
+ * @param {number} n - A Big Number
+ */
 var div = function (a, n) {
-    return from_jordan(jordan_multiply(to_jordan(a), n.modInv(P).mod(P)))
+    return from_jordan(jordan_multiply(to_jordan(a), n.modInv(N).mod(N)))
 }
 
+
+/**
+ * Add two ECPoints.
+ * @param {number} a - An ECPoint
+ * @param {number} b - An ECPoint
+ */
 var add = function (a, b) {
     return from_jordan(jordan_add(to_jordan(a), to_jordan(b)))
 }
 
+
+/**
+ * Subtract two ECPoints.
+ * @param {number} a - An ECPoint
+ * @param {number} b - An ECPoint
+ */
 var sub = function (a, b) {
     return from_jordan(jordan_add(to_jordan(a), to_jordan([b[0], P.subtract(b[1]).mod(P)])))
 }
