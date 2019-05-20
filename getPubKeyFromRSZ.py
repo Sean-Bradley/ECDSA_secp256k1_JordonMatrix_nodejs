@@ -60,9 +60,7 @@ def jordan_double(a):
 
 
 def jordan_multiply(a, n):
-    print(a)
     if jordan_isinf(a) or n == 0:
-        print("1")
         return ([0, 0], [0, 0])
     if (n == 1):
         return a
