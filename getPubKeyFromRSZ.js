@@ -59,6 +59,7 @@ var jordan_double = function (a) {
 }
 
 var jordan_multiply = function (a, n) {
+    console.log(a + " " + n)
     if (jordan_isinf(a) || n.eq(ZERO)) {
         return ([ZERO, ZERO], [ZERO, ZERO]);
     }
@@ -84,18 +85,42 @@ var from_jordan = function (p) {
     return [p[0][0].multiply(p[0][1].modInv(P)).mod(P), p[1][0].multiply(p[1][1].modInv(P)).mod(P)];
 }
 
+
+/**
+ * Multiply an ECPoint.
+ * @param {number} a - An ECPoint
+ * @param {number} n - A Big Number
+ */
 var mul = function (a, n) {
     return from_jordan(jordan_multiply(to_jordan(a), n))
 }
 
+
+/**
+ * Divide an ECPoint.
+ * @param {number} a - An ECPoint
+ * @param {number} n - A Big Number
+ */
 var div = function (a, n) {
-    return from_jordan(jordan_multiply(to_jordan(a), n.modInv(P).mod(P)))
+    return from_jordan(jordan_multiply(to_jordan(a), n.modInv(N).mod(N)))
 }
 
+
+/**
+ * Add two ECPoints.
+ * @param {number} a - An ECPoint
+ * @param {number} b - An ECPoint
+ */
 var add = function (a, b) {
     return from_jordan(jordan_add(to_jordan(a), to_jordan(b)))
 }
 
+
+/**
+ * Subtract two ECPoints.
+ * @param {number} a - An ECPoint
+ * @param {number} b - An ECPoint
+ */
 var sub = function (a, b) {
     return from_jordan(jordan_add(to_jordan(a), to_jordan([b[0], P.subtract(b[1]).mod(P)])))
 }
@@ -104,8 +129,8 @@ var negate = function (a) {
     return [a[0], P.subtract(a[1]).mod(P)];
 }
 
-var ecPoint = function(a) {
-    return mul([X,Y], a);
+var ecPoint = function (a) {
+    return mul([X, Y], a);
 }
 
 
@@ -131,6 +156,7 @@ var Pp1d4 = new BN('3fffffffffffffffffffffffffffffffffffffffffffffffffffffffbfff
 var R = new BN('d47ce4c025c35ec440bc81d99834a624875161a26bf56ef7fdc0f5d52f843ad1', 16);
 var S = new BN('44e1ff2dfd8102cf7a47c21d5c9fd5701610d04953c6836596b4fe9dd2f53e3e', 16);
 var Z = new BN('c0e2d0a89a348de88fda08211c70d1d7e52ccef2eb9459911bf977d587784c6e', 16);
+
 
 //http://2coin.org/index.html?txid=5cc5364a43ee9212387bfd45fa2e2c5e8ed7b2a32fa2f8e3084f6c8845ca3e15
 //var R = new BN('3b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63', 16);
@@ -243,6 +269,7 @@ console.log("Z/R              = " + ZdR.toString(16));
 
 var ecPointKmSdR = mul(ecPointK, SdR);
 console.log("ecPointK * (S/R) = [" + ecPointKmSdR[0].toString(16) + ", " + ecPointKmSdR[1].toString(16) + "]");
+process.exit()
 
 var ecPointZdR = mul([X, Y], ZdR);
 console.log("ecPoint(Z/R)     = [" + ecPointZdR[0].toString(16) + ", " + ecPointZdR[1].toString(16) + "]");
@@ -252,7 +279,7 @@ console.log("-------------");
 console.log();
 console.log("2 Possible ecPoints for the public key. (depends on which ecPointK was used)");
 console.log();
-var ecPointPubKey1 = sub(ecPointKmSdR, ecPointZdR); 
+var ecPointPubKey1 = sub(ecPointKmSdR, ecPointZdR);
 var ecPointPubKey2 = sub(negate(ecPointKmSdR), ecPointZdR); //when using P - root of ySquared value
 
 
@@ -266,18 +293,30 @@ console.log("4 possible Bitcoin formatted public keys. (depends on which ecPoint
 console.log();
 
 console.log("uncompressed pubkey (1)        = \n04" + ecPointPubKey1[0].toString(16) + ecPointPubKey1[1].toString(16));
-if(ecPointPubKey1[1].mod(TWO).eq(ZERO)){
+if (ecPointPubKey1[1].mod(TWO).eq(ZERO)) {
     console.log("compressed pubkey (1) (even y) = \n02" + ecPointPubKey1[0].toString(16));
-}else{
+} else {
     console.log("compressed pubkey (1) (odd y)  = \n03" + ecPointPubKey1[0].toString(16));
 }
 console.log();
 
 console.log("uncompressed pubkey (2)        = \n04" + ecPointPubKey2[0].toString(16) + ecPointPubKey2[1].toString(16));
-if(ecPointPubKey2[1].mod(TWO).eq(ZERO)){
+if (ecPointPubKey2[1].mod(TWO).eq(ZERO)) {
     console.log("compressed pubkey (2) (even y) = \n02" + ecPointPubKey2[0].toString(16));
-}else{
+} else {
     console.log("compressed pubkey (2) (odd y)  = \n03" + ecPointPubKey2[0].toString(16));
 }
 console.log();
+
+
+//1st i create an ecpoint of 10 (secp256k1)
+var myECPoint = mul([x, y], new BN(10));
+console.log("myECPoint = [" + myECPoint[0].toString(16) + ", " + myECPoint[1].toString(16) + "]")
+//next i will divide it by 5. must convert 5 to a bignumber
+var ecResult = div(myECPoint, new BN(5))
+console.log("ecResult = [" + ecResult[0].toString(16) + ", " + ecResult[1].toString(16) + "]")
+// //result should equal ecpoint of 2 (secp256k1)
+var ecTest = mul([x, y], new BN(2)) //expected result 
+console.log(ecResult[0].toString(16) === ecTest[0].toString(16) && ecResult[1].toString(16) === ecTest[1].toString(16))
+
 
