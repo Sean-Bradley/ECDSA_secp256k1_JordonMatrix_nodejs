@@ -10,8 +10,10 @@ pseudocode to get public key point
 `pubKey  = (ecPoint(K) * (S/R)) - ecPoint(Z/R))`
 
 ## NodeJS
-`$ npm install big-integer`
-`$ nodejs getPubKeyFromRSZ.js`
+```bash
+$ npm install big-integer
+$ nodejs getPubKeyFromRSZ.js
+```
 
 ## Python 3
 `$ python getPubKeyFromRSZ.py`
