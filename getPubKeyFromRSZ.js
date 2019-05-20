@@ -268,7 +268,6 @@ console.log("Z/R              = " + ZdR.toString(16));
 
 var ecPointKmSdR = mul(ecPointK, SdR);
 console.log("ecPointK * (S/R) = [" + ecPointKmSdR[0].toString(16) + ", " + ecPointKmSdR[1].toString(16) + "]");
-process.exit()
 
 var ecPointZdR = mul([X, Y], ZdR);
 console.log("ecPoint(Z/R)     = [" + ecPointZdR[0].toString(16) + ", " + ecPointZdR[1].toString(16) + "]");
@@ -308,14 +307,15 @@ if (ecPointPubKey2[1].mod(TWO).eq(ZERO)) {
 console.log();
 
 
-// //1st i create an ecpoint of 10 (secp256k1)
-// var myECPoint = mul([x, y], new BN(10));
-// console.log("myECPoint = [" + myECPoint[0].toString(16) + ", " + myECPoint[1].toString(16) + "]")
-// //next i will divide it by 5. must convert 5 to a bignumber
-// var ecResult = div(myECPoint, new BN(5))
-// console.log("ecResult = [" + ecResult[0].toString(16) + ", " + ecResult[1].toString(16) + "]")
-// // //result should equal ecpoint of 2 (secp256k1)
-// var ecTest = mul([x, y], new BN(2)) //expected result 
-// console.log(ecResult[0].toString(16) === ecTest[0].toString(16) && ecResult[1].toString(16) === ecTest[1].toString(16))
+//simple test
+//1st i create an ecpoint of 10 (secp256k1)
+var myECPoint = mul([x, y], new BN(10));
+console.log("myECPoint = [" + myECPoint[0].toString(16) + ", " + myECPoint[1].toString(16) + "]")
+//next i will divide it by 5. must convert 5 to a bignumber
+var ecResult = div(myECPoint, new BN(5))
+console.log("ecResult = [" + ecResult[0].toString(16) + ", " + ecResult[1].toString(16) + "]")
+// //result should equal ecpoint of 2 (secp256k1)
+var ecTest = mul([x, y], new BN(2)) //expected result 
+console.log(ecResult[0].toString(16) === ecTest[0].toString(16) && ecResult[1].toString(16) === ecTest[1].toString(16))
 
 
