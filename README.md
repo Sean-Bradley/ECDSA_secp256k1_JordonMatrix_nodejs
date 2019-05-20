@@ -9,6 +9,14 @@ If the public key matches the one used in the TX input, or generates the address
 pseudocode to get public key point  
 `pubKey  = (ecPoint(K) * (S/R)) - ecPoint(Z/R))`
 
-Video tutorial at
+## NodeJS
+`$ npm install big-integer`
+`$ nodejs getPubKeyFromRSZ.js`
+
+## Python 3
+`$ python getPubKeyFromRSZ.py`
+
+## Video tutorial at
 https://youtu.be/LQmnMmd3bDU
 
+[![ECDSA Public Key from R, S and Z](https://img.youtube.com/vi/LQmnMmd3bDU/0.jpg)](https://youtu.be/LQmnMmd3bDU)
