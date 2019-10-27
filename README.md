@@ -1,4 +1,4 @@
-# ECDSA_secp256k1_JordonMatrix_nodejs 
+# ECDSA SECP256k1 Jordon Matrix
 contains javascript ecdsa generator, specifically secp256k1 properties, using jordon form matrices
 
 Using the R,S and Z values, you can generate a public key.  
