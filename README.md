@@ -18,7 +18,3 @@ $ nodejs getPubKeyFromRSZ.js
 ## Python 3
 `$ python getPubKeyFromRSZ.py`
 
-## Video tutorial at
-https://youtu.be/LQmnMmd3bDU
-
-[![ECDSA Public Key from R, S and Z](https://img.youtube.com/vi/LQmnMmd3bDU/0.jpg)](https://youtu.be/LQmnMmd3bDU)
