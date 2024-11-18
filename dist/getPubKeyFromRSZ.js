@@ -1,26 +1,26 @@
 import BN from 'big-integer';
-var jordan_isinf = function (p) {
+function jordan_isinf(p) {
     return p[0][0].eq(ZERO) && p[1][0].eq(ZERO);
-};
-var mulcoords = function (c1, c2) {
+}
+function mulcoords(c1, c2) {
     return [c1[0].multiply(c2[0]).mod(P), c1[1].multiply(c2[1]).mod(P)];
-};
-var mul_by_const = function (c, v) {
+}
+function mul_by_const(c, v) {
     return [c[0].multiply(v).mod(P), c[1]];
-};
-var addcoords = function (c1, c2) {
+}
+function addcoords(c1, c2) {
     return [c1[0].multiply(c2[1]).add(c2[0].multiply(c1[1])).mod(P), c1[1].multiply(c2[1]).mod(P)];
-};
-var subcoords = function (c1, c2) {
+}
+function subcoords(c1, c2) {
     var aa = c1[0].multiply(c2[1]).mod(P);
     var bb = c2[0].multiply(c1[1]).mod(P);
     var cc = aa.subtract(bb).add(P).mod(P);
     return [cc.mod(P), c1[1].multiply(c2[1]).mod(P)];
-};
-var invcoords = function (c) {
+}
+function invcoords(c) {
     return [c[1], c[0]];
-};
-var jordan_add = function (a, b) {
+}
+function jordan_add(a, b) {
     if (jordan_isinf(a))
         return b;
     if (jordan_isinf(b))
@@ -42,8 +42,8 @@ var jordan_add = function (a, b) {
     var x = subcoords(subcoords(mulcoords(m, m), a[0]), b[0]);
     var y = subcoords(mulcoords(m, subcoords(a[0], x)), a[1]);
     return [x, y];
-};
-var jordan_double = function (a) {
+}
+function jordan_double(a) {
     if (jordan_isinf(a)) {
         return [
             [ZERO, ONE],
@@ -56,7 +56,7 @@ var jordan_double = function (a) {
     var x = subcoords(mulcoords(m, m), mul_by_const(a[0], TWO));
     var y = subcoords(mulcoords(m, subcoords(a[0], x)), a[1]);
     return [x, y];
-};
+}
 function jordan_multiply(a, n) {
     if (jordan_isinf(a) || n.eq(ZERO)) {
         return [
@@ -82,53 +82,53 @@ function jordan_multiply(a, n) {
         [ZERO, ZERO]
     ];
 }
-var to_jordan = function (p) {
+function to_jordan(p) {
     return [
         [p[0], ONE],
         [p[1], ONE]
     ];
-};
-var from_jordan = function (p) {
+}
+function from_jordan(p) {
     return [p[0][0].multiply(p[0][1].modInv(P)).mod(P), p[1][0].multiply(p[1][1].modInv(P)).mod(P)];
-};
+}
 /**
  * Multiply an ECPoint.
  * @param {number} a - An ECPoint
  * @param {number} n - A Big Number
  */
-var mul = function (a, n) {
+function mul(a, n) {
     return from_jordan(jordan_multiply(to_jordan(a), n));
-};
+}
 /**
  * Divide an ECPoint.
  * @param {number} a - An ECPoint
  * @param {number} n - A Big Number
  */
-var div = function (a, n) {
+function div(a, n) {
     return from_jordan(jordan_multiply(to_jordan(a), n.modInv(N).mod(N)));
-};
+}
 /**
  * Add two ECPoints.
  * @param {number} a - An ECPoint
  * @param {number} b - An ECPoint
  */
-var add = function (a, b) {
+function add(a, b) {
     return from_jordan(jordan_add(to_jordan(a), to_jordan(b)));
-};
+}
 /**
  * Subtract two ECPoints.
  * @param {number} a - An ECPoint
  * @param {number} b - An ECPoint
  */
-var sub = function (a, b) {
+function sub(a, b) {
     return from_jordan(jordan_add(to_jordan(a), to_jordan([b[0], P.subtract(b[1]).mod(P)])));
-};
-var negate = function (a) {
+}
+function negate(a) {
     return [a[0], P.subtract(a[1]).mod(P)];
-};
-var ecPoint = function (a) {
+}
+function ecPoint(a) {
     return mul([X, Y], a);
-};
+}
 //Extract Bitcoin Public Key using R, S and Z values.
 //secp256k1 constants
 const P = BN('fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f', 16); //2²⁵⁶ - 2³² - 2⁹ - 2⁸ - 2⁷ - 2⁶ - 2⁴ - 1
