@@ -3,34 +3,34 @@ import BN from 'big-integer'
 type ECPoint = [BN.BigInteger, BN.BigInteger]
 type Jordan = [[BN.BigInteger, BN.BigInteger], [BN.BigInteger, BN.BigInteger]]
 
-var jordan_isinf = function (p: Jordan) {
+function jordan_isinf(p: Jordan) {
   return p[0][0].eq(ZERO) && p[1][0].eq(ZERO)
 }
 
-var mulcoords = function (c1: ECPoint, c2: ECPoint): ECPoint {
+function mulcoords(c1: ECPoint, c2: ECPoint): ECPoint {
   return [c1[0].multiply(c2[0]).mod(P), c1[1].multiply(c2[1]).mod(P)]
 }
 
-var mul_by_const = function (c: ECPoint, v: BN.BigInteger): ECPoint {
+function mul_by_const(c: ECPoint, v: BN.BigInteger): ECPoint {
   return [c[0].multiply(v).mod(P), c[1]]
 }
 
-var addcoords = function (c1: ECPoint, c2: ECPoint): ECPoint {
+function addcoords(c1: ECPoint, c2: ECPoint): ECPoint {
   return [c1[0].multiply(c2[1]).add(c2[0].multiply(c1[1])).mod(P), c1[1].multiply(c2[1]).mod(P)]
 }
 
-var subcoords = function (c1: ECPoint, c2: ECPoint): ECPoint {
+function subcoords(c1: ECPoint, c2: ECPoint): ECPoint {
   var aa = c1[0].multiply(c2[1]).mod(P)
   var bb = c2[0].multiply(c1[1]).mod(P)
   var cc = aa.subtract(bb).add(P).mod(P)
   return [cc.mod(P), c1[1].multiply(c2[1]).mod(P)]
 }
 
-var invcoords = function (c: ECPoint): ECPoint {
+function invcoords(c: ECPoint): ECPoint {
   return [c[1], c[0]]
 }
 
-var jordan_add = function (a: Jordan, b: Jordan): Jordan {
+function jordan_add(a: Jordan, b: Jordan): Jordan {
   if (jordan_isinf(a)) return b
   if (jordan_isinf(b)) return a
 
@@ -52,7 +52,7 @@ var jordan_add = function (a: Jordan, b: Jordan): Jordan {
   return [x, y]
 }
 
-var jordan_double = function (a: Jordan): Jordan {
+function jordan_double(a: Jordan): Jordan {
   if (jordan_isinf(a)) {
     return [
       [ZERO, ONE],
@@ -93,14 +93,14 @@ function jordan_multiply(a: Jordan, n: BN.BigInteger): Jordan {
   ]
 }
 
-var to_jordan = function (p: ECPoint): Jordan {
+function to_jordan(p: ECPoint): Jordan {
   return [
     [p[0], ONE],
     [p[1], ONE]
   ]
 }
 
-var from_jordan = function (p: Jordan): ECPoint {
+function from_jordan(p: Jordan): ECPoint {
   return [p[0][0].multiply(p[0][1].modInv(P)).mod(P), p[1][0].multiply(p[1][1].modInv(P)).mod(P)]
 }
 
@@ -109,7 +109,7 @@ var from_jordan = function (p: Jordan): ECPoint {
  * @param {number} a - An ECPoint
  * @param {number} n - A Big Number
  */
-var mul = function (a: ECPoint, n: BN.BigInteger): ECPoint {
+function mul(a: ECPoint, n: BN.BigInteger): ECPoint {
   return from_jordan(jordan_multiply(to_jordan(a), n))
 }
 
@@ -118,7 +118,7 @@ var mul = function (a: ECPoint, n: BN.BigInteger): ECPoint {
  * @param {number} a - An ECPoint
  * @param {number} n - A Big Number
  */
-var div = function (a: ECPoint, n: BN.BigInteger) {
+function div(a: ECPoint, n: BN.BigInteger): ECPoint {
   return from_jordan(jordan_multiply(to_jordan(a), n.modInv(N).mod(N)))
 }
 
@@ -127,7 +127,7 @@ var div = function (a: ECPoint, n: BN.BigInteger) {
  * @param {number} a - An ECPoint
  * @param {number} b - An ECPoint
  */
-var add = function (a: ECPoint, b: ECPoint) {
+function add(a: ECPoint, b: ECPoint): ECPoint {
   return from_jordan(jordan_add(to_jordan(a), to_jordan(b)))
 }
 
@@ -136,15 +136,15 @@ var add = function (a: ECPoint, b: ECPoint) {
  * @param {number} a - An ECPoint
  * @param {number} b - An ECPoint
  */
-var sub = function (a: ECPoint, b: ECPoint): ECPoint {
+function sub(a: ECPoint, b: ECPoint): ECPoint {
   return from_jordan(jordan_add(to_jordan(a), to_jordan([b[0], P.subtract(b[1]).mod(P)])))
 }
 
-var negate = function (a: ECPoint): ECPoint {
+function negate(a: ECPoint): ECPoint {
   return [a[0], P.subtract(a[1]).mod(P)]
 }
 
-var ecPoint = function (a: BN.BigInteger) {
+function ecPoint(a: BN.BigInteger): ECPoint {
   return mul([X, Y], a)
 }
 
