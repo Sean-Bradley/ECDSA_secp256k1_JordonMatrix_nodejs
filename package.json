@@ -1,0 +1,17 @@
+{
+  "name": "ecdsa_secp256k1_jordonmatrix_nodejs",
+  "version": "1.0.0",
+  "description": "contains javascript ecdsa generator, specifically secp256k1 properties, using jordon form matrices",
+  "main": "getPubKeyFromRSZ.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc -p ./src"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "big-integer": "^1.6.52",
+    "typescript": "^5.6.3"
+  }
+}

@@ -1,5 +1,6 @@
 # ECDSA SECP256k1 Jordon Matrix
-contains javascript ecdsa generator, specifically secp256k1 properties, using jordon form matrices
+
+Contains JavaScript ECDSA generator, specifically secp256k1 properties, using jordon form matrices.
 
 Using the R,S and Z values, you can generate a public key.  
 This example code demonstrates how to get public keys using RSZ values from a transaction input.  
@@ -10,11 +11,21 @@ pseudocode to get public key point
 `pubKey  = (ecPoint(K) * (S/R)) - ecPoint(Z/R))`
 
 ## NodeJS
+
 ```bash
-$ npm install big-integer
-$ nodejs getPubKeyFromRSZ.js
+npm install big-integer
+nodejs getPubKeyFromRSZ.js
 ```
 
 ## Python 3
-`$ python getPubKeyFromRSZ.py`
 
+```bash
+python getPubKeyFromRSZ.py
+```
+
+## TypeScript
+
+```bash
+npm run build
+node ./dist/getPubKeyFromRSZ.js
+```
